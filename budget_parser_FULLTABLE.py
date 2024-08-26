@@ -191,7 +191,7 @@ def extract_tables(text, years):
         elif re.match(r'Sector\s+([A-Z])\s+(.+)', line):
             match = re.match(r'Sector\s+([A-Z])\s+(.+)', line)
             context['Sector_num'], context['Sector_nam'] = match.groups()
-        elif 'Major Head' in line:
+        elif line.startswith('Major Head'):
             match = re.search(r'Major Head\s+(\d{4})\s+(.+)', line)
             if match:
                 context['MajorHead_num'], context['MajorHead_nam'] = match.groups()
@@ -236,12 +236,12 @@ def extract_tables(text, years):
             previous_context = context.copy()
             context['Dept_num'] = context['Dept_nam'] = ''
         
-        sub_major_num, sub_major_name = find_sub_major_head(lines, i)
-        if sub_major_num and sub_major_num != context['SubMajorHead_num']:
-            context['SubMajorHead_num'] = sub_major_num
-            context['SubMajorHead_name'] = sub_major_name
-            context['MinorHead_num'] = context['MinorHead_nam'] = ''
-            context['GroupHead_num'] = context['GroupHead_nam'] = ''
+        # sub_major_num, sub_major_name = find_sub_major_head(lines, i)
+        # if sub_major_num and sub_major_num != context['SubMajorHead_num']:
+        #     context['SubMajorHead_num'] = sub_major_num
+        #     context['SubMajorHead_name'] = sub_major_name
+        #     context['MinorHead_num'] = context['MinorHead_nam'] = ''
+        #     context['GroupHead_num'] = context['GroupHead_nam'] = ''
         
         group_head_num, group_head_name = find_group_head(lines, i)
         if group_head_num and group_head_num != context['GroupHead_num']:
@@ -384,7 +384,7 @@ def check_ocr_errors(df, years):
     return potential_errors
 
 def main():
-    pdf_path = os.path.join(os.path.dirname(__file__), '07 education_1 few pages.pdf')
+    pdf_path = os.path.join(os.path.dirname(__file__), '07 education.pdf')
     output_file = os.path.join(os.path.dirname(__file__), 'budget_data_allgen.xlsx')
 
     print(f"Processing {pdf_path}")
