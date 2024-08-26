@@ -383,9 +383,8 @@ def check_ocr_errors(df, years):
 
     return potential_errors
 
-# Main execution
-if __name__ == "__main__":
-    pdf_path = os.path.join(os.path.dirname(__file__), '07 education.pdf')
+def main():
+    pdf_path = os.path.join(os.path.dirname(__file__), '07 education_1 few pages.pdf')
     output_file = os.path.join(os.path.dirname(__file__), 'budget_data_allgen.xlsx')
 
     print(f"Processing {pdf_path}")
@@ -438,11 +437,11 @@ if __name__ == "__main__":
                 totals_data.append({
                     'Year': year_key,
                     'Revenue': total_revenue,
-                    'Revenue Plan': totals[year_key]['Revenue Plan'],
-                    'Revenue Non-Plan': totals[year_key]['Revenue Non-Plan'],
+                    'Revenue Plan': totals[year_key].get('Revenue Plan', None),
+                    'Revenue Non-Plan': totals[year_key].get('Revenue Non-Plan', None),
                     'Capital': total_capital,
-                    'Capital Plan': totals[year_key]['Capital Plan'],
-                    'Capital Non-Plan': totals[year_key]['Capital Non-Plan'],
+                    'Capital Plan': totals[year_key].get('Capital Plan', None),
+                    'Capital Non-Plan': totals[year_key].get('Capital Non-Plan', None),
                     'Total': total,
                 })
                 
@@ -453,11 +452,13 @@ if __name__ == "__main__":
                 # Print the totals
                 print(f"\n{year_key}:")
                 print(f"  Revenue: {total_revenue:.2f}")
-                print(f"    Plan: {totals[year_key]['Revenue Plan']:.2f}")
-                print(f"    Non-Plan: {totals[year_key]['Revenue Non-Plan']:.2f}")
+                if 'Revenue Plan' in totals[year_key] and "Revenue Non-Plan" in totals[year_key]:
+                    print(f"    Plan: {totals[year_key]['Revenue Plan']:.2f}")
+                    print(f"    Non-Plan: {totals[year_key]['Revenue Non-Plan']:.2f}")
                 print(f"  Capital: {total_capital:.2f}")
-                print(f"    Plan: {totals[year_key]['Capital Plan']:.2f}")
-                print(f"    Non-Plan: {totals[year_key]['Capital Non-Plan']:.2f}")
+                if 'Capital Plan' in totals[year_key] and "Capital Non-Plan" in totals[year_key]:
+                    print(f"    Plan: {totals[year_key]['Capital Plan']:.2f}")
+                    print(f"    Non-Plan: {totals[year_key]['Capital Non-Plan']:.2f}")
                 print(f"  Total: {total:.2f}")
                 print(f"  DataFrame Total: {df_total:.2f}")
                 print(f"  Check: {totals_data[-1]['Check']}")
@@ -478,3 +479,8 @@ if __name__ == "__main__":
             print("\nWarning: Discrepancies found. Please review the extracted data and the original PDF.")
     else:
         print("No data was extracted or the DataFrame is empty.")
+
+
+
+if __name__ == "__main__":
+    main()
