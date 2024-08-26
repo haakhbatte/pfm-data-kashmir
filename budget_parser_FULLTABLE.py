@@ -385,8 +385,8 @@ def check_ocr_errors(df, years):
 
 # Main execution
 if __name__ == "__main__":
-    pdf_path = '/Users/aashnajamal/Desktop/PFM data K/2017-18/07 education.pdf'
-    output_file = '/Users/aashnajamal/Desktop/budget_data_allgen.xlsx'
+    pdf_path = os.path.join(os.path.dirname(__file__), '07 education.pdf')
+    output_file = os.path.join(os.path.dirname(__file__), 'budget_data_allgen.xlsx')
 
     print(f"Processing {pdf_path}")
     df, discrepancies, totals = process_pdf(pdf_path)
