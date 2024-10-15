@@ -9,7 +9,7 @@ def extract_text_from_pdf(pdf_path, max_pages=None):
         pages = convert_from_path(pdf_path, first_page=1, last_page=max_pages)
         text = ""
         for page in pages:
-            text += pytesseract.image_to_string(page, config='--psm 6 --oem 3 -c preserve_interword_spaces=1') + "\n"
+            text += pytesseract.image_to_string(page, config='--psm 6 --oem 3 -c preserve_interword_spaces=1 -l eng+urd') + "\n"
         return text
     except Exception as e:
         print(f"Error processing PDF: {e}")
@@ -183,7 +183,7 @@ def extract_tables(text, years):
     lines = text.split('\n')
     for i, line in enumerate(lines):
         line = clean_text(line)
-        
+
         if 'Demand Number' in line:
             match = re.search(r'Demand Number\s*:\s*(\d+)', line)
             if match:
@@ -297,7 +297,16 @@ def safe_float(x):
         return 0.0
 
 def process_pdf(pdf_path):
-    text = extract_text_from_pdf(pdf_path)
+    txt_path = pdf_path.replace('.pdf', '.txt')
+
+    if os.path.exists(txt_path):
+        with open(txt_path, 'r', encoding='utf-8') as file:
+            text = file.read()
+    else:
+        text = extract_text_from_pdf(pdf_path)
+        if text:
+            with open(txt_path, 'w', encoding='utf-8') as file:
+                file.write(text)
     if text is None:
         print("Failed to extract text from PDF.")
         return None, None, None
