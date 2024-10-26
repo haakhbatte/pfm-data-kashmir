@@ -7,6 +7,11 @@ import pandas as pd
 import sys
 from PIL import Image
 
+# use the option below to process one file at a time
+LIMIT_TO_FILE = None
+# LIMIT_TO_FILE = '03_03-Planning_and_Development.pdf'
+
+
 def extract_text_from_pdf(pdf_path, max_pages=None):
     try:
         pages = convert_from_path(pdf_path, first_page=1, last_page=max_pages)
@@ -668,9 +673,14 @@ def check_ocr_errors(df, year_labels):
     return potential_errors
 
 
+
 def process_folder(input_folder, output_folder):
     for root, dirs, files in os.walk(input_folder):
+        if LIMIT_TO_FILE and LIMIT_TO_FILE not in files:
+            continue
         for file in files:
+            if LIMIT_TO_FILE and file != LIMIT_TO_FILE:
+                continue
             if file.lower().endswith('.pdf'):
                 pdf_path = os.path.join(root, file)
                 relative_path = os.path.relpath(root, input_folder)
@@ -731,8 +741,8 @@ def safe_float(x):
 
 # Replace the existing main() function with this updated version
 def main():
-    input_folder = '/Users/aashnajamal/Desktop/PFM data K/00 input trial'
-    output_folder = '/Users/aashnajamal/Desktop/PFM data K/Trial data'
+    input_folder = os.path.expanduser('~/Desktop/PFM data K/00 input trial')
+    output_folder = os.path.expanduser('~/Desktop/PFM data K/Trial data')
     
     # Ensure output folder exists
     os.makedirs(output_folder, exist_ok=True)
