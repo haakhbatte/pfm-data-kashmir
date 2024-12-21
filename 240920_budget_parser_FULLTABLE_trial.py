@@ -373,14 +373,7 @@ def extract_tables(text, year_labels, folder_name):
         elif 'Charged' in line:
             context['Voted_Charged'] = 'C'
         elif re.match(r'^\d{3}\s|\d+\.\d+', line):
-            if is_post_2020:
-                combined_line = line
-                while i + 1 < len(lines) and not re.match(r'^\d{3}\s|\d+\.\d+', lines[i+1]):
-                    i += 1
-                    combined_line += ' ' + clean_text(lines[i])
-                current_table.append(combined_line)
-            else:
-                current_table.append(line)
+            current_table.append(line)
         elif ('Total' in line or 'Sub Total' in line) and current_table:
             tables.append((context.copy(), current_table))
             current_table = []
