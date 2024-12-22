@@ -29,7 +29,7 @@ def clean_text(text):
 
 def check_ocr_errors_and_outliers(df, year_labels):
     for year_label in year_labels:
-        df[year_label] = pd.to_numeric(df[year_label], errors='coerce')
+        df[year_label] = df[year_label].str.replace(',', '').apply(pd.to_numeric, errors='coerce')
         
         # Create a new error column for each year
         error_column = f'{year_label}_Error'
