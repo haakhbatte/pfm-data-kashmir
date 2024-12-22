@@ -277,6 +277,19 @@ def extract_plan_non_plan_totals(text, year_labels):
 
     return totals, has_plan_non_plan
 
+def attempt_repair(text: str) -> str:
+    """ Attempt to repair lines:
+
+    1. Combine lines ending with 'Major Head' and starting with a number
+    """
+    lines = text.split('\n')
+    for i, line in enumerate(lines):
+        if line.endswith('Major Head'):
+            if i+1 < len(lines) and re.match(r'^\d', lines[i+1]):
+                lines[i] = lines[i] + ' ' + lines[i+1]
+                lines.pop(i+1)
+    return '\n'.join(lines)
+
 def extract_tables(text, year_labels, folder_name):
     tables = []
     current_table = []
@@ -544,6 +557,7 @@ def process_pdf(pdf_path):
         return None, None, None, None
 
     plan_non_plan_totals, has_plan_non_plan = extract_plan_non_plan_totals(text, year_labels)
+    text = attempt_repair(text)
     tables = extract_tables(text, year_labels, folder_name)
     
     all_data = []
@@ -595,37 +609,6 @@ def process_pdf(pdf_path):
             print(disc)
 
     return df, discrepancies, plan_non_plan_totals, year_labels
-
-
-# ... (include other necessary functions like check_ocr_errors_and_outliers, clean_item_name, safe_float, etc.)
-def check_ocr_errors_and_outliers(df, year_labels):
-    for year_label in year_labels:
-        # Convert to numeric, treating non-convertible values as NaN
-        df[year_label] = pd.to_numeric(df[year_label], errors='coerce')
-        
-        error_column = f'{year_label}_Error'
-        df[error_column] = ''
-        
-        # Check for OCR errors (NaN values or empty strings)
-        ocr_errors = df[year_label].isna() | (df[year_label] == '')
-        df.loc[ocr_errors, error_column] = 'OCR Error'
-        
-        # Check for outliers (using a lower threshold)
-        non_zero_values = df[df[year_label] != 0][year_label]
-        if len(non_zero_values) > 0:
-            median = non_zero_values.median()
-            mad = np.abs(non_zero_values - median).median()
-            lower_bound = median - 5 * mad
-            upper_bound = median + 5 * mad
-            outliers = (df[year_label] < lower_bound) | (df[year_label] > upper_bound)
-            df.loc[outliers & ~ocr_errors, error_column] = 'Outlier'
-            df.loc[outliers & ocr_errors, error_column] = 'OCR Error, Outlier'
-        
-        # Check for suspicious zero values
-        zero_values = df[year_label] == 0
-        df.loc[zero_values & (df[error_column] == ''), error_column] = 'Suspicious Zero'
-    
-    return df
 
 
 def safe_float(x):
