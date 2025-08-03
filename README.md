@@ -34,7 +34,7 @@ It supports different formats used across the years and applies OCR handling, ou
 
 ---
 
-### ▶️ [`2020-onwards/`](./2020-onwards)
+### ▶️ [`post-2020/`](./post-2020)
 - For **FY 2021-22 and beyond**
 - PDFs use consistent Hindi formatting
 - Item tables revert to **4-column** layout (same as pre-2020)
