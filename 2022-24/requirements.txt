@@ -1,0 +1,7 @@
+numpy
+pandas
+pdf2image
+pytesseract
+Pillow
+openpyxl
+pdfplumber
